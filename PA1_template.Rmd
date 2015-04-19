@@ -1,25 +1,78 @@
+
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
+title: 'Reproducible Research: Peer Assessment 1'
+output:
   html_document:
-    keep_md: true
+    keep_md: yes
+  pdf_document: default
 ---
 
 
 ## Loading and preprocessing the data
-
-
+```{r, message=FALSE}
+unzip("activity.zip")
+activity <- read.csv("activity.csv")
+## packages used for some reshaping and plotting of data
+require(dplyr)
+require(ggplot2)
+## colors make your plots nicer
+mitred <- "#A31F34"
+mitgray <- "#8A8B8C"
+wmubrn <- "#331900"
+wmugld <- "#EEB111"
+cuorng <- "#F66733"
+regalia <- "#522D80"
+```
 
 ## What is mean total number of steps taken per day?
-
+```{r}
+steps_per_day <- aggregate(steps ~ date, data = activity, sum)
+per_day_plot <- ggplot(x = steps, data = steps_per_day, aes(x = steps, fill = ..count..))
+per_day_plot + geom_histogram(binwidth = 2500) + 
+    scale_fill_gradient("Count", low = mitgray, high = mitred)
+mean(steps_per_day$steps)
+median(steps_per_day$steps)
+```
 
 
 ## What is the average daily activity pattern?
-
+```{r}
+steps_per_interval <- aggregate(steps ~ interval, data = activity, mean)
+plot(steps ~ interval, data = steps_per_interval, type = "l", col = "blue")
+max(steps_per_interval$steps)
+with(steps_per_interval, interval[steps == max(steps)])
+```
 
 
 ## Imputing missing values
-
-
+```{r}
+sum(is.na(activity$steps))
+med_steps <- aggregate(steps~interval, data=activity, median)
+get_med <- function(elt, ivl) {
+    if(is.na(elt)) {
+        elt <- {with(med_steps, steps[interval == ivl])}
+        }
+    return(elt)
+    }
+activity2 <- activity %>%
+    mutate(steps = mapply(get_med, steps, interval))
+steps_per_day <- aggregate(steps ~ date, data = activity2, sum)
+per_day_plot <- ggplot(x = steps, data = steps_per_day, aes(x = steps, fill = ..count..))
+per_day_plot + geom_histogram(binwidth = 2500) +
+    scale_fill_gradient("Count", low = wmugld, high = wmubrn)
+mean(steps_per_day$steps)
+median(steps_per_day$steps)
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r}
+is.wkday <- function(date) {
+    result <- if(weekdays(date) %in% c("Saturday", "Sunday")) "Weekend" else "Weekday"
+    return(result)
+}
+steps_per_interval <- mutate(activity2, wkday = factor(sapply(as.Date(date), is.wkday))) %>%
+    group_by(interval, wkday) %>%
+    summarize(steps = mean(steps))
+g <- ggplot(steps_per_interval, x = interval, y = steps, aes(x = interval, y = steps, color = wkday))
+g + geom_line(size = 2) + facet_grid(wkday ~ .) + guides(color = FALSE) + scale_color_manual(values = c(cuorng, regalia))
+```
