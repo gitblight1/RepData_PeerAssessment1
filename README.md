@@ -51,7 +51,7 @@ per_day_plot + geom_histogram(binwidth = 2500) +
     scale_fill_gradient("Count", low = mitgray, high = mitred)
 ```
 
-![](PA1_final_files/figure-html/unnamed-chunk-3-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
 
 The plot shows a roughly normal distribution among the total number of steps taken in a day, with a few more "low-activity" days than might be expected, and two days of more than 20,000 steps. Our individual's mean number of steps per day is 10766.19 with median 10765.
 
@@ -65,7 +65,7 @@ steps_per_interval <- aggregate(steps ~ interval, data = activity, mean)
 plot(steps ~ interval, data = steps_per_interval, type = "l", col = "blue")
 ```
 
-![](PA1_final_files/figure-html/unnamed-chunk-4-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
 
 The plot shows almost no activity for the first 500-600 intervals, with a large spike in activity occurring around interval 800 and lasting until shortly after interval 900; the peak activity occurs at interval 835 (the mean number of steps taken at this time is 206.17). Activity then fluctuates until around interval 1900, wen it begins to drop down to nearly nothing by the end of the day.
 
@@ -91,7 +91,7 @@ per_day_plot + geom_histogram(binwidth = 2500) +
     scale_fill_gradient("Count", low = wmugld, high = wmubrn)
 ```
 
-![](PA1_final_files/figure-html/unnamed-chunk-5-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
 
 Filling in missing data in this way pushes up the number of "low-activity" days (0-2500 steps) without adding to other days. This may be because the median values for most intervals are below, and possibly well below, their mean. Including our imputed values lowers our individual's mean number of steps per day to 9503.87 with median 10395.
 
@@ -111,6 +111,6 @@ g <- ggplot(steps_per_interval, x = interval, y = steps, aes(x = interval, y = s
 g + geom_line(size = 2) + facet_grid(wkday ~ .) + guides(color = FALSE) + scale_color_manual(values = c(cuorng, regalia))
 ```
 
-![](PA1_final_files/figure-html/unnamed-chunk-6-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
 
 Indeed, we see that, while the weekday pattern is quite similar to the overall pattern we saw earlier, the weekend activity shows a somewhat different pattern, where our individual tends to wake up later, and does not do quite so much walking during "commute time", but remains more active in general during daytime, and is active later into the evening than during the week.
